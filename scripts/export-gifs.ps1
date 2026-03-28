@@ -8,6 +8,7 @@
 )
 
 $ErrorActionPreference = 'Stop'
+$MinimumVisiblePixels = 30
 
 Add-Type -AssemblyName System.Drawing
 
@@ -31,10 +32,14 @@ function Test-FrameHasVisiblePixels {
 
   $bitmap = [System.Drawing.Bitmap]::new($Path)
   try {
+    $visiblePixels = 0
     for ($x = 0; $x -lt $bitmap.Width; $x++) {
       for ($y = 0; $y -lt $bitmap.Height; $y++) {
         if ($bitmap.GetPixel($x, $y).A -gt 0) {
-          return $true
+          $visiblePixels++
+          if ($visiblePixels -ge $MinimumVisiblePixels) {
+            return $true
+          }
         }
       }
     }
@@ -46,7 +51,7 @@ function Test-FrameHasVisiblePixels {
   }
 }
 
-function Get-TrimmedFrameFiles {
+function Get-FilteredFrameFiles {
   param([string]$FramesDir)
 
   $frameFiles = @(Get-ChildItem -Path $FramesDir -Filter 'frame-*.png' | Sort-Object Name)
@@ -54,26 +59,45 @@ function Get-TrimmedFrameFiles {
     throw "No extracted frames found in $FramesDir"
   }
 
-  $lastVisibleIndex = -1
-  for ($index = 0; $index -lt $frameFiles.Count; $index++) {
-    if (Test-FrameHasVisiblePixels -Path $frameFiles[$index].FullName) {
-      $lastVisibleIndex = $index
+  $visibleFrames = @()
+  $blankFrames = @()
+
+  foreach ($frameFile in $frameFiles) {
+    if (Test-FrameHasVisiblePixels -Path $frameFile.FullName) {
+      $visibleFrames += $frameFile
+    }
+    else {
+      $blankFrames += $frameFile
     }
   }
 
-  if ($lastVisibleIndex -lt 0) {
-    return @($frameFiles[0])
-  }
-
-  $keptFrames = @($frameFiles[0..$lastVisibleIndex])
-  if ($lastVisibleIndex + 1 -lt $frameFiles.Count) {
-    $trimmedFrames = @($frameFiles[($lastVisibleIndex + 1)..($frameFiles.Count - 1)])
-    foreach ($trimmed in $trimmedFrames) {
-      Remove-Item $trimmed.FullName -Force
+  if (-not $visibleFrames) {
+    $visibleFrames = @($frameFiles[0])
+    if ($frameFiles.Count -gt 1) {
+      $blankFrames = @($frameFiles[1..($frameFiles.Count - 1)])
     }
   }
 
-  return $keptFrames
+  foreach ($blankFrame in $blankFrames) {
+    Remove-Item $blankFrame.FullName -Force
+  }
+
+  $filteredDir = Join-Path $FramesDir '_filtered'
+  if (Test-Path $filteredDir) {
+    Remove-Item $filteredDir -Recurse -Force
+  }
+  New-Item -ItemType Directory -Force -Path $filteredDir | Out-Null
+
+  for ($index = 0; $index -lt $visibleFrames.Count; $index++) {
+    $destination = Join-Path $filteredDir ('frame-{0:d2}.png' -f ($index + 1))
+    Copy-Item -Path $visibleFrames[$index].FullName -Destination $destination -Force
+  }
+
+  return @{
+    FrameDir = $filteredDir
+    VisibleFrameCount = $visibleFrames.Count
+    RemovedBlankFrames = $blankFrames.Count
+  }
 }
 
 function Get-SafeName {
@@ -148,7 +172,7 @@ foreach ($sprite in $sprites) {
       slug = $nameEntry.slug
       directory = $folderName
       frames = $columns
-      trimmedTrailingFrames = 0
+      removedBlankFrames = 0
     }
 
     New-Item -ItemType Directory -Force -Path $framesDir | Out-Null
@@ -167,14 +191,13 @@ foreach ($sprite in $sprites) {
       $framePattern
     )
 
-    $keptFrames = @(Get-TrimmedFrameFiles -FramesDir $framesDir)
-    $visibleFrameCount = $keptFrames.Count
-    $animationEntry.frames = $visibleFrameCount
-    $animationEntry.trimmedTrailingFrames = $columns - $visibleFrameCount
+    $filteredFrames = Get-FilteredFrameFiles -FramesDir $framesDir
+    $animationEntry.frames = $filteredFrames.VisibleFrameCount
+    $animationEntry.removedBlankFrames = $filteredFrames.RemovedBlankFrames
 
     Invoke-Ffmpeg -FfmpegArgs @(
       '-framerate', "$Fps",
-      '-i', (Join-Path $framesDir 'frame-%02d.png'),
+      '-i', (Join-Path $filteredFrames.FrameDir 'frame-%02d.png'),
       '-filter_complex', 'split[a][b];[a]palettegen=reserve_transparent=1[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
       '-loop', '0',
       $gifPath
@@ -187,7 +210,7 @@ foreach ($sprite in $sprites) {
     }
 
     if ($ExportFrames) {
-      Get-ChildItem -Path $framesDir -Filter 'frame-*.png' | ForEach-Object {
+      Get-ChildItem -Path $filteredFrames.FrameDir -Filter 'frame-*.png' | ForEach-Object {
         Copy-Item -Path $_.FullName -Destination (Join-Path $rowDir $_.Name) -Force
       }
     }

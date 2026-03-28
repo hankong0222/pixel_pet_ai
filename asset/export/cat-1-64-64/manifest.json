@@ -11,7 +11,7 @@
                            "slug":  "idle-sit",
                            "directory":  "00-idle-sit",
                            "frames":  4,
-                           "trimmedTrailingFrames":  10
+                           "removedBlankFrames":  10
                        },
                        {
                            "row":  1,
@@ -19,7 +19,7 @@
                            "slug":  "idle-stand",
                            "directory":  "01-idle-stand",
                            "frames":  4,
-                           "trimmedTrailingFrames":  10
+                           "removedBlankFrames":  10
                        },
                        {
                            "row":  2,
@@ -27,7 +27,7 @@
                            "slug":  "walk-down",
                            "directory":  "02-walk-down",
                            "frames":  6,
-                           "trimmedTrailingFrames":  8
+                           "removedBlankFrames":  8
                        },
                        {
                            "row":  3,
@@ -35,7 +35,7 @@
                            "slug":  "walk-up",
                            "directory":  "03-walk-up",
                            "frames":  6,
-                           "trimmedTrailingFrames":  8
+                           "removedBlankFrames":  8
                        },
                        {
                            "row":  4,
@@ -43,7 +43,7 @@
                            "slug":  "walk-right",
                            "directory":  "04-walk-right",
                            "frames":  6,
-                           "trimmedTrailingFrames":  8
+                           "removedBlankFrames":  8
                        },
                        {
                            "row":  5,
@@ -51,7 +51,7 @@
                            "slug":  "walk-left",
                            "directory":  "05-walk-left",
                            "frames":  6,
-                           "trimmedTrailingFrames":  8
+                           "removedBlankFrames":  8
                        },
                        {
                            "row":  6,
@@ -59,7 +59,7 @@
                            "slug":  "sit",
                            "directory":  "06-sit",
                            "frames":  14,
-                           "trimmedTrailingFrames":  0
+                           "removedBlankFrames":  0
                        },
                        {
                            "row":  7,
@@ -67,7 +67,7 @@
                            "slug":  "idle-lie",
                            "directory":  "07-idle-lie",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  8,
@@ -75,7 +75,7 @@
                            "slug":  "run-down",
                            "directory":  "08-run-down",
                            "frames":  4,
-                           "trimmedTrailingFrames":  10
+                           "removedBlankFrames":  10
                        },
                        {
                            "row":  9,
@@ -83,7 +83,7 @@
                            "slug":  "run-up",
                            "directory":  "09-run-up",
                            "frames":  4,
-                           "trimmedTrailingFrames":  10
+                           "removedBlankFrames":  10
                        },
                        {
                            "row":  10,
@@ -91,7 +91,7 @@
                            "slug":  "run-right",
                            "directory":  "10-run-right",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  11,
@@ -99,7 +99,7 @@
                            "slug":  "run-left",
                            "directory":  "11-run-left",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  12,
@@ -107,7 +107,7 @@
                            "slug":  "lick-paw-sit-front",
                            "directory":  "12-lick-paw-sit-front",
                            "frames":  8,
-                           "trimmedTrailingFrames":  6
+                           "removedBlankFrames":  6
                        },
                        {
                            "row":  13,
@@ -115,7 +115,7 @@
                            "slug":  "lick-paw-lie-front",
                            "directory":  "13-lick-paw-lie-front",
                            "frames":  8,
-                           "trimmedTrailingFrames":  6
+                           "removedBlankFrames":  6
                        },
                        {
                            "row":  14,
@@ -123,7 +123,7 @@
                            "slug":  "meow-sit-front",
                            "directory":  "14-meow-sit-front",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  15,
@@ -131,7 +131,7 @@
                            "slug":  "meow-lie-front",
                            "directory":  "15-meow-lie-front",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  16,
@@ -139,7 +139,7 @@
                            "slug":  "meow-stand-front",
                            "directory":  "16-meow-stand-front",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  17,
@@ -147,7 +147,7 @@
                            "slug":  "scratch-sit-left",
                            "directory":  "17-scratch-sit-left",
                            "frames":  8,
-                           "trimmedTrailingFrames":  6
+                           "removedBlankFrames":  6
                        },
                        {
                            "row":  18,
@@ -155,7 +155,7 @@
                            "slug":  "scratch-sit-right",
                            "directory":  "18-scratch-sit-right",
                            "frames":  8,
-                           "trimmedTrailingFrames":  6
+                           "removedBlankFrames":  6
                        },
                        {
                            "row":  19,
@@ -163,7 +163,7 @@
                            "slug":  "tail-wag-sit-front",
                            "directory":  "19-tail-wag-sit-front",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  20,
@@ -171,7 +171,7 @@
                            "slug":  "tail-wag-sit-back",
                            "directory":  "20-tail-wag-sit-back",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  21,
@@ -179,7 +179,7 @@
                            "slug":  "tail-wag-sit-left",
                            "directory":  "21-tail-wag-sit-left",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  22,
@@ -187,7 +187,7 @@
                            "slug":  "tail-wag-sit-right",
                            "directory":  "22-tail-wag-sit-right",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  23,
@@ -195,7 +195,7 @@
                            "slug":  "tail-wag-stand-front",
                            "directory":  "23-tail-wag-stand-front",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  24,
@@ -203,7 +203,7 @@
                            "slug":  "tail-wag-stand-back",
                            "directory":  "24-tail-wag-stand-back",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  25,
@@ -211,7 +211,7 @@
                            "slug":  "tail-wag-stand-left",
                            "directory":  "25-tail-wag-stand-left",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  26,
@@ -219,7 +219,7 @@
                            "slug":  "tail-wag-stand-right",
                            "directory":  "26-tail-wag-stand-right",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  27,
@@ -227,7 +227,7 @@
                            "slug":  "tail-wag-lie-left",
                            "directory":  "27-tail-wag-lie-left",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  28,
@@ -235,7 +235,7 @@
                            "slug":  "tail-wag-lie-right",
                            "directory":  "28-tail-wag-lie-right",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  29,
@@ -243,7 +243,7 @@
                            "slug":  "right-paw-swipe-stand-front",
                            "directory":  "29-right-paw-swipe-stand-front",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  30,
@@ -251,7 +251,7 @@
                            "slug":  "left-paw-swipe-stand-front",
                            "directory":  "30-left-paw-swipe-stand-front",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  31,
@@ -259,7 +259,7 @@
                            "slug":  "paw-swipe-stand-back",
                            "directory":  "31-paw-swipe-stand-back",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  32,
@@ -267,7 +267,7 @@
                            "slug":  "left-paw-swipe-stand-left",
                            "directory":  "32-left-paw-swipe-stand-left",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  33,
@@ -275,7 +275,7 @@
                            "slug":  "right-paw-swipe-stand-left",
                            "directory":  "33-right-paw-swipe-stand-left",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  34,
@@ -283,7 +283,7 @@
                            "slug":  "left-paw-swipe-stand-right",
                            "directory":  "34-left-paw-swipe-stand-right",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  35,
@@ -291,7 +291,7 @@
                            "slug":  "right-paw-swipe-stand-right",
                            "directory":  "35-right-paw-swipe-stand-right",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  36,
@@ -299,7 +299,7 @@
                            "slug":  "right-paw-swipe-sit-front",
                            "directory":  "36-right-paw-swipe-sit-front",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  37,
@@ -307,7 +307,7 @@
                            "slug":  "left-paw-swipe-sit-front",
                            "directory":  "37-left-paw-swipe-sit-front",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  38,
@@ -315,7 +315,7 @@
                            "slug":  "paw-swipe-sit-back",
                            "directory":  "38-paw-swipe-sit-back",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  39,
@@ -323,7 +323,7 @@
                            "slug":  "left-paw-swipe-sit-left",
                            "directory":  "39-left-paw-swipe-sit-left",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  40,
@@ -331,7 +331,7 @@
                            "slug":  "right-paw-swipe-sit-left",
                            "directory":  "40-right-paw-swipe-sit-left",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  41,
@@ -339,7 +339,7 @@
                            "slug":  "left-paw-swipe-sit-right",
                            "directory":  "41-left-paw-swipe-sit-right",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  42,
@@ -347,7 +347,7 @@
                            "slug":  "right-paw-swipe-sit-right",
                            "directory":  "42-right-paw-swipe-sit-right",
                            "frames":  11,
-                           "trimmedTrailingFrames":  3
+                           "removedBlankFrames":  3
                        },
                        {
                            "row":  43,
@@ -355,7 +355,7 @@
                            "slug":  "yawn-sit-front",
                            "directory":  "43-yawn-sit-front",
                            "frames":  7,
-                           "trimmedTrailingFrames":  7
+                           "removedBlankFrames":  7
                        },
                        {
                            "row":  44,
@@ -363,7 +363,7 @@
                            "slug":  "sleep-1-left-front",
                            "directory":  "44-sleep-1-left-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  45,
@@ -371,7 +371,7 @@
                            "slug":  "sleep-1-right-front",
                            "directory":  "45-sleep-1-right-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  46,
@@ -379,7 +379,7 @@
                            "slug":  "sleep-1-left-back",
                            "directory":  "46-sleep-1-left-back",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  47,
@@ -387,7 +387,7 @@
                            "slug":  "sleep-1-right-back",
                            "directory":  "47-sleep-1-right-back",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  48,
@@ -395,7 +395,7 @@
                            "slug":  "sleep-2-left-front",
                            "directory":  "48-sleep-2-left-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  49,
@@ -403,7 +403,7 @@
                            "slug":  "sleep-2-right-front",
                            "directory":  "49-sleep-2-right-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  50,
@@ -411,7 +411,7 @@
                            "slug":  "sleep-3-left-front",
                            "directory":  "50-sleep-3-left-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  51,
@@ -419,7 +419,7 @@
                            "slug":  "sleep-3-right-front",
                            "directory":  "51-sleep-3-right-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  52,
@@ -427,7 +427,7 @@
                            "slug":  "sleep-4-left-front",
                            "directory":  "52-sleep-4-left-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  53,
@@ -435,7 +435,7 @@
                            "slug":  "sleep-4-right-front",
                            "directory":  "53-sleep-4-right-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  54,
@@ -443,7 +443,7 @@
                            "slug":  "sleep-5-left-front",
                            "directory":  "54-sleep-5-left-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  55,
@@ -451,7 +451,7 @@
                            "slug":  "sleep-5-right-front",
                            "directory":  "55-sleep-5-right-front",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  56,
@@ -459,7 +459,7 @@
                            "slug":  "eat-food-stand-front",
                            "directory":  "56-eat-food-stand-front",
                            "frames":  10,
-                           "trimmedTrailingFrames":  4
+                           "removedBlankFrames":  4
                        },
                        {
                            "row":  57,
@@ -467,7 +467,7 @@
                            "slug":  "eat-food-stand-back",
                            "directory":  "57-eat-food-stand-back",
                            "frames":  8,
-                           "trimmedTrailingFrames":  6
+                           "removedBlankFrames":  6
                        },
                        {
                            "row":  58,
@@ -475,7 +475,7 @@
                            "slug":  "eat-food-stand-left",
                            "directory":  "58-eat-food-stand-left",
                            "frames":  10,
-                           "trimmedTrailingFrames":  4
+                           "removedBlankFrames":  4
                        },
                        {
                            "row":  59,
@@ -483,15 +483,15 @@
                            "slug":  "eat-food-stand-right",
                            "directory":  "59-eat-food-stand-right",
                            "frames":  10,
-                           "trimmedTrailingFrames":  4
+                           "removedBlankFrames":  4
                        },
                        {
                            "row":  60,
                            "label":  "Hiss front left",
                            "slug":  "hiss-front-left",
                            "directory":  "60-hiss-front-left",
-                           "frames":  6,
-                           "trimmedTrailingFrames":  8
+                           "frames":  2,
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  61,
@@ -499,7 +499,7 @@
                            "slug":  "hiss-front-right",
                            "directory":  "61-hiss-front-right",
                            "frames":  2,
-                           "trimmedTrailingFrames":  12
+                           "removedBlankFrames":  12
                        },
                        {
                            "row":  62,
@@ -507,7 +507,7 @@
                            "slug":  "jump-back",
                            "directory":  "62-jump-back",
                            "frames":  3,
-                           "trimmedTrailingFrames":  11
+                           "removedBlankFrames":  11
                        },
                        {
                            "row":  63,
@@ -515,7 +515,7 @@
                            "slug":  "jump-left",
                            "directory":  "63-jump-left",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  64,
@@ -523,7 +523,7 @@
                            "slug":  "jump-right",
                            "directory":  "64-jump-right",
                            "frames":  5,
-                           "trimmedTrailingFrames":  9
+                           "removedBlankFrames":  9
                        },
                        {
                            "row":  65,
@@ -531,7 +531,7 @@
                            "slug":  "on-hind-legs",
                            "directory":  "65-on-hind-legs",
                            "frames":  4,
-                           "trimmedTrailingFrames":  10
+                           "removedBlankFrames":  10
                        },
                        {
                            "row":  66,
@@ -539,7 +539,7 @@
                            "slug":  "unused-empty-01",
                            "directory":  "66-unused-empty-01",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        },
                        {
                            "row":  67,
@@ -547,7 +547,7 @@
                            "slug":  "unused-empty-02",
                            "directory":  "67-unused-empty-02",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        },
                        {
                            "row":  68,
@@ -555,7 +555,7 @@
                            "slug":  "unused-empty-03",
                            "directory":  "68-unused-empty-03",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        },
                        {
                            "row":  69,
@@ -563,7 +563,7 @@
                            "slug":  "unused-empty-04",
                            "directory":  "69-unused-empty-04",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        },
                        {
                            "row":  70,
@@ -571,7 +571,7 @@
                            "slug":  "unused-empty-05",
                            "directory":  "70-unused-empty-05",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        },
                        {
                            "row":  71,
@@ -579,7 +579,7 @@
                            "slug":  "unused-empty-06",
                            "directory":  "71-unused-empty-06",
                            "frames":  1,
-                           "trimmedTrailingFrames":  13
+                           "removedBlankFrames":  13
                        }
                    ]
 }

@@ -8,7 +8,7 @@ from json import JSONDecodeError
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, QSize, Qt, QTimer
-from PySide6.QtGui import QAction, QCursor, QMovie
+from PySide6.QtGui import QAction, QCursor, QMovie, QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMenu, QWidget
 
 
@@ -23,6 +23,17 @@ RANDOM_BEHAVIOR_MAX_MS = 7000
 WALK_STEP_MS = 110
 WALK_STEP_PX = 10
 WALK_STEP_RANGE = (18, 42)
+JUMP_STEP_COUNT = 8
+JUMP_STEP_MS = 55
+JUMP_STEP_PX = 14
+CLICK_DRAG_THRESHOLD = 12
+PET_HOLD_MS = 600
+LOOK_RADIUS_PX = 220
+FOLLOW_RADIUS_PX = 170
+FOLLOW_STEP_PX = 8
+CLICK_STREAK_RESET_MS = 900
+ANNOYED_HOLD_MS = 1200
+ANNOYED_ESCAPE_STEPS = (20, 34)
 
 
 ACTION_ALIASES = {
@@ -126,6 +137,9 @@ class PetWindow(QWidget):
             animation["slug"]: animation for animation in self.manifest["animations"]
         }
         self.drag_offset = QPoint()
+        self.drag_start_global = QPoint()
+        self.press_global_pos = QPoint()
+        self.was_dragging = False
         self.current_animation_slug = ""
         self.current_animation_dir = ""
         self.scale = DEFAULT_SCALE
@@ -133,6 +147,12 @@ class PetWindow(QWidget):
         self.current_movie: QMovie | None = None
         self.walk_direction = 0
         self.walk_steps_remaining = 0
+        self.jump_direction = 0
+        self.jump_steps_remaining = 0
+        self.click_streak = 0
+        self.interaction_locked = False
+        self.pending_jump_direction: int | None = None
+        self.annoyed_escape_active = False
 
         self.label = QLabel(self)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -154,9 +174,25 @@ class PetWindow(QWidget):
         self.behavior_timer.setSingleShot(True)
         self.behavior_timer.timeout.connect(self.play_random_behavior)
 
+        self.pet_timer = QTimer(self)
+        self.pet_timer.setSingleShot(True)
+        self.pet_timer.timeout.connect(self.react_to_pet_hold)
+
+        self.click_streak_timer = QTimer(self)
+        self.click_streak_timer.setSingleShot(True)
+        self.click_streak_timer.timeout.connect(self.reset_click_streak)
+
+        self.annoyed_timer = QTimer(self)
+        self.annoyed_timer.setSingleShot(True)
+        self.annoyed_timer.timeout.connect(self.finish_annoyed_sequence)
+
         self.walk_timer = QTimer(self)
         self.walk_timer.timeout.connect(self.advance_walk)
         self.walk_timer.setInterval(WALK_STEP_MS)
+
+        self.jump_timer = QTimer(self)
+        self.jump_timer.timeout.connect(self.advance_jump)
+        self.jump_timer.setInterval(JUMP_STEP_MS)
 
         self.play_action(animation_slug)
         self.move_to_visible_spot()
@@ -199,14 +235,51 @@ class PetWindow(QWidget):
         self.current_animation_slug = animation["slug"]
         self.current_animation_dir = animation_dir
         self.current_movie = movie
+        self.label.setPixmap(QPixmap())
         self.label.setMovie(movie)
         self.label.move(0, 0)
         self.label.setFixedSize(scaled_size)
         self.setFixedSize(scaled_size)
         movie.start()
 
+    def set_still_frame(self, slug: str, frame_name: str = "frame-01.png") -> None:
+        animation = self.animation_for_slug(slug)
+        if animation is None:
+            return
+
+        image_path = EXPORT_ROOT / self.cat_name / animation["directory"] / frame_name
+        if not image_path.exists():
+            self.play_action(slug)
+            return
+
+        base_size = self.manifest.get("cellSize", 64)
+        scaled_size = QSize(base_size * self.scale, base_size * self.scale)
+        pixmap = QPixmap(str(image_path))
+        if pixmap.isNull():
+            self.play_action(slug)
+            return
+
+        scaled_pixmap = pixmap.scaled(
+            scaled_size,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.FastTransformation,
+        )
+
+        if self.current_movie is not None:
+            self.current_movie.stop()
+
+        self.current_animation_slug = animation["slug"]
+        self.current_animation_dir = animation["directory"]
+        self.current_movie = None
+        self.label.setMovie(None)
+        self.label.setPixmap(scaled_pixmap)
+        self.label.move(0, 0)
+        self.label.setFixedSize(scaled_size)
+        self.setFixedSize(scaled_size)
+
     def play_action(self, slug: str) -> None:
         self.stop_walk()
+        self.stop_jump()
         animation = self.animation_for_slug(slug)
         if animation is None:
             return
@@ -231,10 +304,10 @@ class PetWindow(QWidget):
         self.play_action("idle-lie")
 
     def walk_left(self) -> None:
-        self.start_walk("walk-left", -1)
+        self.start_walk("walk-right", -1)
 
     def walk_right(self) -> None:
-        self.start_walk("walk-right", 1)
+        self.start_walk("walk-left", 1)
 
     def run_left(self) -> None:
         self.play_action("run-left")
@@ -260,7 +333,8 @@ class PetWindow(QWidget):
         self.play_random_from(["hiss-front-left", "hiss-front-right"])
 
     def jump(self) -> None:
-        self.play_random_from(["jump-left", "jump-right", "jump-back"])
+        direction = random.choice((-1, 1))
+        self.start_jump(direction)
 
     def yawn(self) -> None:
         self.play_action("yawn-sit-front")
@@ -277,11 +351,122 @@ class PetWindow(QWidget):
         else:
             self.walk_right()
 
+    def react_to_click(self, global_pos: QPoint) -> None:
+        self.stop_random_behavior()
+        self.register_click()
+
+        if self.click_streak >= 3:
+            self.react_to_annoyance(global_pos)
+            self.reset_click_streak()
+            return
+
+        local_pos = self.mapFromGlobal(global_pos)
+        clicked_left_side = local_pos.x() < self.width() // 2
+
+        if clicked_left_side:
+            self.play_random_from(
+                ["meow-stand-front", "left-paw-swipe-stand-front", "hiss-front-left"],
+            )
+        else:
+            self.play_random_from(
+                ["meow-stand-front", "right-paw-swipe-stand-front", "hiss-front-right"],
+            )
+
+        self.schedule_random_behavior()
+
+    def register_click(self) -> None:
+        self.click_streak += 1
+        self.click_streak_timer.start(CLICK_STREAK_RESET_MS)
+
+    def reset_click_streak(self) -> None:
+        self.click_streak = 0
+
+    def react_to_annoyance(self, global_pos: QPoint) -> None:
+        self.stop_random_behavior()
+        self.stop_walk()
+        self.stop_jump()
+        self.interaction_locked = True
+        self.annoyed_escape_active = True
+        pet_center_x = self.frameGeometry().center().x()
+        if global_pos.x() < pet_center_x:
+            self.set_still_frame("hiss-front-left")
+            self.pending_jump_direction = 1
+        else:
+            self.set_still_frame("hiss-front-right")
+            self.pending_jump_direction = -1
+        self.annoyed_timer.start(ANNOYED_HOLD_MS)
+
+    def finish_annoyed_sequence(self) -> None:
+        direction = self.pending_jump_direction
+        self.pending_jump_direction = None
+        self.interaction_locked = False
+        if direction is not None:
+            self.start_escape(direction)
+
+    def start_escape(self, direction: int) -> None:
+        slug = "walk-right" if direction < 0 else "walk-left"
+        animation = self.animation_for_slug(slug)
+        if animation is None:
+            self.annoyed_escape_active = False
+            self.schedule_random_behavior()
+            self.start_jump(direction)
+            return
+
+        self.set_animation_by_directory(animation["directory"])
+        self.walk_direction = direction
+        self.walk_steps_remaining = random.randint(*ANNOYED_ESCAPE_STEPS)
+        self.walk_timer.start()
+
+    def react_to_pet_hold(self) -> None:
+        self.stop_random_behavior()
+        self.play_random_from(
+            [
+                "tail-wag-sit-front",
+                "tail-wag-sit-left",
+                "tail-wag-sit-right",
+                "lick-paw-sit-front",
+                "meow-sit-front",
+            ],
+        )
+        self.schedule_random_behavior()
+
+    def react_to_cursor_proximity(self, global_pos: QPoint) -> None:
+        if self.interaction_locked:
+            return
+        if self.walk_timer.isActive() or self.jump_timer.isActive():
+            return
+
+        pet_center = self.frameGeometry().center()
+        distance = (global_pos - pet_center).manhattanLength()
+        if distance > LOOK_RADIUS_PX:
+            return
+
+        if global_pos.x() < pet_center.x():
+            self.play_action("tail-wag-stand-left")
+        else:
+            self.play_action("tail-wag-stand-right")
+
+        if distance <= FOLLOW_RADIUS_PX:
+            self.follow_cursor(global_pos)
+
+    def follow_cursor(self, global_pos: QPoint) -> None:
+        screen = self.screen() or QApplication.primaryScreen()
+        if screen is None:
+            return
+
+        available = screen.availableGeometry()
+        pet_center_x = self.frameGeometry().center().x()
+        direction = -1 if global_pos.x() < pet_center_x else 1
+        next_x = self.x() + (FOLLOW_STEP_PX * direction)
+        next_x = max(available.left(), min(next_x, available.right() - self.width()))
+        self.move(next_x, self.y())
+
     def start_walk(self, slug: str, direction: int) -> None:
         animation = self.animation_for_slug(slug)
         if animation is None:
             return
 
+        self.stop_jump()
         self.set_animation_by_directory(animation["directory"])
         self.walk_direction = direction
         self.walk_steps_remaining = random.randint(*WALK_STEP_RANGE)
@@ -291,6 +476,30 @@ class PetWindow(QWidget):
         self.walk_timer.stop()
         self.walk_direction = 0
         self.walk_steps_remaining = 0
+
+    def start_jump(self, direction: int) -> None:
+        self.stop_walk()
+        self.stop_jump()
+
+        slug = "jump-right" if direction < 0 else "jump-left"
+        animation = self.animation_for_slug(slug)
+        if animation is None:
+            return
+
+        self.set_animation_by_directory(animation["directory"])
+        self.jump_direction = direction
+        self.jump_steps_remaining = JUMP_STEP_COUNT
+        self.jump_timer.start()
+
+    def jump_toward(self, global_pos: QPoint) -> None:
+        pet_center_x = self.frameGeometry().center().x()
+        direction = -1 if global_pos.x() < pet_center_x else 1
+        self.start_jump(direction)
+
+    def stop_jump(self) -> None:
+        self.jump_timer.stop()
+        self.jump_direction = 0
+        self.jump_steps_remaining = 0
 
     def start_random_behavior(self) -> None:
         self.schedule_random_behavior()
@@ -322,6 +531,9 @@ class PetWindow(QWidget):
         if self.walk_steps_remaining <= 0:
             self.stop_walk()
             self.random_idle()
+            if self.annoyed_escape_active:
+                self.annoyed_escape_active = False
+                self.schedule_random_behavior()
             return
 
         screen = self.screen() or QApplication.primaryScreen()
@@ -345,11 +557,33 @@ class PetWindow(QWidget):
         self.walk_steps_remaining -= 1
 
     def set_left_facing(self, left_facing: bool) -> None:
-        target_slug = "walk-left" if left_facing else "walk-right"
+        target_slug = "walk-right" if left_facing else "walk-left"
         if self.current_animation_slug != target_slug:
             animation = self.animation_for_slug(target_slug)
             if animation is not None:
                 self.set_animation_by_directory(animation["directory"])
+
+    def advance_jump(self) -> None:
+        if self.jump_steps_remaining <= 0:
+            self.stop_jump()
+            self.random_idle()
+            return
+
+        screen = self.screen() or QApplication.primaryScreen()
+        if screen is None:
+            return
+
+        available = screen.availableGeometry()
+        next_x = self.x() + (JUMP_STEP_PX * self.jump_direction)
+        next_y = self.y()
+
+        if next_x < available.left():
+            next_x = available.left()
+        elif next_x + self.width() > available.right():
+            next_x = available.right() - self.width()
+
+        self.move(next_x, next_y)
+        self.jump_steps_remaining -= 1
 
     def move_to_visible_spot(self) -> None:
         screen = QApplication.primaryScreen()
@@ -440,12 +674,53 @@ class PetWindow(QWidget):
 
     def mousePressEvent(self, event) -> None:  # noqa: N802
         if event.button() == Qt.MouseButton.LeftButton:
+            if self.interaction_locked:
+                event.accept()
+                return
+            self.press_global_pos = event.globalPosition().toPoint()
+            self.drag_start_global = event.globalPosition().toPoint()
             self.drag_offset = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
+            self.was_dragging = False
+            self.pet_timer.start(PET_HOLD_MS)
             event.accept()
 
     def mouseMoveEvent(self, event) -> None:  # noqa: N802
+        self.react_to_cursor_proximity(event.globalPosition().toPoint())
         if event.buttons() & Qt.MouseButton.LeftButton:
+            if self.interaction_locked:
+                event.accept()
+                return
+            moved_distance = (event.globalPosition().toPoint() - self.press_global_pos).manhattanLength()
+            if moved_distance > CLICK_DRAG_THRESHOLD and self.pet_timer.isActive():
+                self.pet_timer.stop()
+            if moved_distance > CLICK_DRAG_THRESHOLD:
+                self.was_dragging = True
             self.move(event.globalPosition().toPoint() - self.drag_offset)
+            event.accept()
+
+    def mouseReleaseEvent(self, event) -> None:  # noqa: N802
+        if event.button() == Qt.MouseButton.LeftButton:
+            if self.interaction_locked:
+                event.accept()
+                return
+            if self.pet_timer.isActive():
+                self.pet_timer.stop()
+            release_pos = event.globalPosition().toPoint()
+            moved_distance = (release_pos - self.drag_start_global).manhattanLength()
+            if moved_distance <= CLICK_DRAG_THRESHOLD:
+                self.react_to_click(release_pos)
+            elif self.was_dragging:
+                self.react_to_drag_release()
+            event.accept()
+
+    def mouseDoubleClickEvent(self, event) -> None:  # noqa: N802
+        if event.button() == Qt.MouseButton.LeftButton:
+            if self.interaction_locked:
+                event.accept()
+                return
+            self.stop_random_behavior()
+            self.jump_toward(event.globalPosition().toPoint())
+            self.schedule_random_behavior()
             event.accept()
 
     def toggle_random_behavior(self, enabled: bool) -> None:
@@ -453,6 +728,13 @@ class PetWindow(QWidget):
             self.start_random_behavior()
             return
         self.stop_random_behavior()
+
+    def react_to_drag_release(self) -> None:
+        self.stop_random_behavior()
+        self.play_random_from(
+            ["sit", "idle-sit", "tail-wag-sit-front", "meow-sit-front"],
+        )
+        self.schedule_random_behavior()
 
 
 def main() -> int:

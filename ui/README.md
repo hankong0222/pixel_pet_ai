@@ -12,6 +12,7 @@ This folder contains a minimal PySide6 desktop pet prototype.
 - Opens a right-click menu to switch animations or quit
 - Exposes pet actions as callable methods
 - Includes random behavior and random left/right walking
+- Includes basic mouse interaction
 
 ## Run
 
@@ -80,3 +81,15 @@ pet.call_action("walk_left")
 pet.call_action("sleep")
 pet.call_action("random_walk")
 ```
+
+## Mouse Interaction
+
+- Left click: trigger a reaction animation
+- Left double click: jump toward the mouse side
+- Long press: trigger a "petting" reaction
+- Move the cursor near the pet: it reacts and turns toward the cursor
+- Move the cursor very close: it follows the cursor a short distance
+- Repeated fast clicks: it gets annoyed and jumps away
+- Left drag: move the pet window
+- Release after dragging: it plays a landing/recovery reaction
+- Right click: open the action menu
