@@ -63,3 +63,24 @@ Available parameters:
 - `-CellSize`: frame size, default `64`
 - `-Fps`: GIF frame rate, default `8`
 - `-ExportFrames`: keep extracted PNG frames in addition to GIFs
+
+## Desktop UI Prototype
+
+A minimal PySide6 desktop pet prototype is included in `ui/main.py`.
+
+Features:
+
+- transparent background
+- frameless window
+- always-on-top behavior
+- GIF playback from exported pet animations
+- drag with left mouse button
+- right-click menu for animation switching and quit
+
+Run:
+
+```powershell
+venv\Scripts\python.exe ui\main.py
+```
+
+More details are available in `ui/README.md`.

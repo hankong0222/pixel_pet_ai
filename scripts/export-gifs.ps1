@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$SourceDir = (Join-Path $PSScriptRoot '..\PACK\PACK'),
   [string]$OutputDir = (Join-Path $PSScriptRoot '..\asset\export'),
   [string]$NamesPath = (Join-Path $PSScriptRoot 'animation-names.json'),
@@ -24,6 +24,56 @@ function Get-PngSize {
   finally {
     $image.Dispose()
   }
+}
+
+function Test-FrameHasVisiblePixels {
+  param([string]$Path)
+
+  $bitmap = [System.Drawing.Bitmap]::new($Path)
+  try {
+    for ($x = 0; $x -lt $bitmap.Width; $x++) {
+      for ($y = 0; $y -lt $bitmap.Height; $y++) {
+        if ($bitmap.GetPixel($x, $y).A -gt 0) {
+          return $true
+        }
+      }
+    }
+
+    return $false
+  }
+  finally {
+    $bitmap.Dispose()
+  }
+}
+
+function Get-TrimmedFrameFiles {
+  param([string]$FramesDir)
+
+  $frameFiles = @(Get-ChildItem -Path $FramesDir -Filter 'frame-*.png' | Sort-Object Name)
+  if (-not $frameFiles) {
+    throw "No extracted frames found in $FramesDir"
+  }
+
+  $lastVisibleIndex = -1
+  for ($index = 0; $index -lt $frameFiles.Count; $index++) {
+    if (Test-FrameHasVisiblePixels -Path $frameFiles[$index].FullName) {
+      $lastVisibleIndex = $index
+    }
+  }
+
+  if ($lastVisibleIndex -lt 0) {
+    return @($frameFiles[0])
+  }
+
+  $keptFrames = @($frameFiles[0..$lastVisibleIndex])
+  if ($lastVisibleIndex + 1 -lt $frameFiles.Count) {
+    $trimmedFrames = @($frameFiles[($lastVisibleIndex + 1)..($frameFiles.Count - 1)])
+    foreach ($trimmed in $trimmedFrames) {
+      Remove-Item $trimmed.FullName -Force
+    }
+  }
+
+  return $keptFrames
 }
 
 function Get-SafeName {
@@ -92,12 +142,13 @@ foreach ($sprite in $sprites) {
     $gifPath = Join-Path $rowDir 'animation.gif'
     $y = $rowIndex * $CellSize
 
-    $manifest.animations += [ordered]@{
+    $animationEntry = [ordered]@{
       row = $rowIndex
       label = $nameEntry.label
       slug = $nameEntry.slug
       directory = $folderName
       frames = $columns
+      trimmedTrailingFrames = 0
     }
 
     New-Item -ItemType Directory -Force -Path $framesDir | Out-Null
@@ -116,6 +167,11 @@ foreach ($sprite in $sprites) {
       $framePattern
     )
 
+    $keptFrames = @(Get-TrimmedFrameFiles -FramesDir $framesDir)
+    $visibleFrameCount = $keptFrames.Count
+    $animationEntry.frames = $visibleFrameCount
+    $animationEntry.trimmedTrailingFrames = $columns - $visibleFrameCount
+
     Invoke-Ffmpeg -FfmpegArgs @(
       '-framerate', "$Fps",
       '-i', (Join-Path $framesDir 'frame-%02d.png'),
@@ -124,7 +180,11 @@ foreach ($sprite in $sprites) {
       $gifPath
     )
 
-    Remove-Item $stripPath -Force
+    $manifest.animations += $animationEntry
+
+    if (Test-Path $stripPath) {
+      Remove-Item $stripPath -Force
+    }
 
     if ($ExportFrames) {
       Get-ChildItem -Path $framesDir -Filter 'frame-*.png' | ForEach-Object {
@@ -135,7 +195,6 @@ foreach ($sprite in $sprites) {
     Remove-Item $framesDir -Recurse -Force
   }
 
-  $manifest | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $spriteOutputDir 'manifest.json')
+  $manifest | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $spriteOutputDir 'manifest.json') -Encoding utf8
   Write-Host "Exported $rows animations from $($sprite.Name) to $spriteOutputDir"
 }
-
