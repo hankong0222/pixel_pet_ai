@@ -8,6 +8,7 @@ This folder contains a minimal PySide6 desktop pet prototype.
 - Keeps the pet always on top
 - Removes the normal window frame
 - Plays one exported GIF animation
+- Loads `manifest.named.json` automatically when available
 - Lets you drag the pet with the left mouse button
 - Opens a right-click menu to switch animations or quit
 - Exposes pet actions as callable methods
@@ -19,6 +20,9 @@ This folder contains a minimal PySide6 desktop pet prototype.
 ```powershell
 venv\Scripts\python.exe ui\main.py
 ```
+
+The current default pet is `all-cats-black`.
+Its named animation map lives in `asset/export/all-cats-black/manifest.named.json`.
 
 If your current virtual environment is broken, recreate it first:
 
@@ -55,19 +59,32 @@ Context menu
 
 `PetWindow` now exposes direct action methods that you can call from your own logic:
 
-- `pet.sit()`
-- `pet.idle_sit()`
-- `pet.idle_stand()`
-- `pet.idle_lie()`
+- `pet.call_action("idle")`
+- `pet.call_action("happy")`
+- `pet.call_action("full")`
+- `pet.call_action("sleeping")`
+- `pet.call_action("chilling")`
+- `pet.call_action("prone")`
+- `pet.call_action("stay_box")`
+- `pet.call_action("hide_in_box")`
+- `pet.call_action("out_of_box")`
+- `pet.call_action("cry")`
+- `pet.call_action("dance")`
+- `pet.call_action("tickle")`
+- `pet.call_action("supprised")`
+- `pet.call_action("jumping")`
+- `pet.call_action("dying")`
+- `pet.call_action("running")`
+- `pet.call_action("running_left")`
+- `pet.call_action("get_hurts")`
+- `pet.call_action("attack")`
+- `pet.call_action("excited")`
 - `pet.walk_left()`
 - `pet.walk_right()`
-- `pet.run_left()`
-- `pet.run_right()`
 - `pet.eat()`
 - `pet.sleep()`
 - `pet.hiss()`
 - `pet.jump()`
-- `pet.yawn()`
 - `pet.random_idle()`
 - `pet.random_emote()`
 - `pet.random_walk()`

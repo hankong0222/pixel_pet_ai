@@ -1,0 +1,29 @@
+﻿{
+  "source": "AllCatsBlack.png",
+  "cellSize": 64,
+  "columns": 16,
+  "rows": 19,
+  "fps": 8,
+  "animations": [
+    {"row":0,"label":"Idle","slug":"idle","directory":"idel","frames":6,"removedBlankFrames":10},
+    {"row":1,"label":"Happy","slug":"happy","directory":"happy","frames":3,"removedBlankFrames":13},
+    {"row":2,"label":"Full","slug":"full","directory":"full","frames":1,"removedBlankFrames":15},
+    {"row":3,"label":"Sleeping","slug":"sleeping","directory":"sleeping","frames":4,"removedBlankFrames":12},
+    {"row":4,"label":"Chilling","slug":"chilling","directory":"chilling","frames":10,"removedBlankFrames":6},
+    {"row":5,"label":"Prone","slug":"prone","directory":"prone","frames":6,"removedBlankFrames":10},
+    {"row":6,"label":"Stay Box","slug":"stay-box","directory":"stay_box","frames":12,"removedBlankFrames":4},
+    {"row":7,"label":"Hide In Box","slug":"hide-in-box","directory":"hide_in_box","frames":12,"removedBlankFrames":4},
+    {"row":8,"label":"Out Of Box","slug":"out-of-box","directory":"out_of_box","frames":10,"removedBlankFrames":6},
+    {"row":9,"label":"Cry","slug":"cry","directory":"cry","frames":12,"removedBlankFrames":4},
+    {"row":10,"label":"Dance","slug":"dance","directory":"dance","frames":4,"removedBlankFrames":12},
+    {"row":11,"label":"Tickle","slug":"tickle","directory":"tickle","frames":4,"removedBlankFrames":12},
+    {"row":12,"label":"Supprised","slug":"supprised","directory":"supprised","frames":8,"removedBlankFrames":8},
+    {"row":13,"label":"Jumping","slug":"jumping","directory":"jumping","frames":2,"removedBlankFrames":14},
+    {"row":14,"label":"Dying","slug":"dying","directory":"dying","frames":4,"removedBlankFrames":12},
+    {"row":15,"label":"Running","slug":"running","directory":"running","frames":6,"removedBlankFrames":10},
+    {"row":15,"label":"Running Left","slug":"running-left","directory":"running_left","frames":6,"removedBlankFrames":10},
+    {"row":16,"label":"Get Hurts","slug":"get-hurts","directory":"get_hurts","frames":5,"removedBlankFrames":11},
+    {"row":17,"label":"Attack","slug":"attack","directory":"attack","frames":8,"removedBlankFrames":8},
+    {"row":18,"label":"Excited","slug":"excited","directory":"excited","frames":7,"removedBlankFrames":9}
+  ]
+}

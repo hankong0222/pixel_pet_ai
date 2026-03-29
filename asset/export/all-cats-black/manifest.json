@@ -1,0 +1,125 @@
+﻿{
+    "source":  "AllCatsBlack.png",
+    "cellSize":  64,
+    "columns":  16,
+    "rows":  19,
+    "fps":  8,
+    "frameInset":  0,
+    "transparentColor":  "",
+    "animations":  [
+                       {
+                           "row":  0,
+                           "directory":  "row-00",
+                           "frames":  6,
+                           "removedBlankFrames":  10
+                       },
+                       {
+                           "row":  1,
+                           "directory":  "row-01",
+                           "frames":  3,
+                           "removedBlankFrames":  13
+                       },
+                       {
+                           "row":  2,
+                           "directory":  "row-02",
+                           "frames":  1,
+                           "removedBlankFrames":  15
+                       },
+                       {
+                           "row":  3,
+                           "directory":  "row-03",
+                           "frames":  4,
+                           "removedBlankFrames":  12
+                       },
+                       {
+                           "row":  4,
+                           "directory":  "row-04",
+                           "frames":  10,
+                           "removedBlankFrames":  6
+                       },
+                       {
+                           "row":  5,
+                           "directory":  "row-05",
+                           "frames":  6,
+                           "removedBlankFrames":  10
+                       },
+                       {
+                           "row":  6,
+                           "directory":  "row-06",
+                           "frames":  12,
+                           "removedBlankFrames":  4
+                       },
+                       {
+                           "row":  7,
+                           "directory":  "row-07",
+                           "frames":  12,
+                           "removedBlankFrames":  4
+                       },
+                       {
+                           "row":  8,
+                           "directory":  "row-08",
+                           "frames":  10,
+                           "removedBlankFrames":  6
+                       },
+                       {
+                           "row":  9,
+                           "directory":  "row-09",
+                           "frames":  12,
+                           "removedBlankFrames":  4
+                       },
+                       {
+                           "row":  10,
+                           "directory":  "row-10",
+                           "frames":  4,
+                           "removedBlankFrames":  12
+                       },
+                       {
+                           "row":  11,
+                           "directory":  "row-11",
+                           "frames":  4,
+                           "removedBlankFrames":  12
+                       },
+                       {
+                           "row":  12,
+                           "directory":  "row-12",
+                           "frames":  8,
+                           "removedBlankFrames":  8
+                       },
+                       {
+                           "row":  13,
+                           "directory":  "row-13",
+                           "frames":  2,
+                           "removedBlankFrames":  14
+                       },
+                       {
+                           "row":  14,
+                           "directory":  "row-14",
+                           "frames":  4,
+                           "removedBlankFrames":  12
+                       },
+                       {
+                           "row":  15,
+                           "directory":  "row-15",
+                           "frames":  6,
+                           "removedBlankFrames":  10
+                       },
+                       {
+                           "row":  16,
+                           "directory":  "row-16",
+                           "frames":  5,
+                           "removedBlankFrames":  11
+                       },
+                       {
+                           "row":  17,
+                           "directory":  "row-17",
+                           "frames":  8,
+                           "removedBlankFrames":  8
+                       },
+                       {
+                           "row":  18,
+                           "directory":  "row-18",
+                           "frames":  7,
+                           "removedBlankFrames":  9
+                       }
+                   ]
+}

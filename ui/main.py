@@ -14,8 +14,8 @@ from PySide6.QtWidgets import QApplication, QLabel, QMenu, QWidget
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 EXPORT_ROOT = PROJECT_ROOT / "asset" / "export"
-DEFAULT_CAT = "cat-1-64-64"
-DEFAULT_ANIMATION = "sit"
+DEFAULT_CAT = "all-cats-black"
+DEFAULT_ANIMATION = "idle"
 DEFAULT_SCALE = 4
 DEFAULT_MOVIE_SPEED = 55
 RANDOM_BEHAVIOR_MIN_MS = 3500
@@ -37,86 +37,69 @@ ANNOYED_ESCAPE_STEPS = (20, 34)
 
 
 ACTION_ALIASES = {
-    "idle_sit": "idle-sit",
-    "idle_stand": "idle-stand",
-    "sit": "sit",
-    "idle_lie": "idle-lie",
-    "walk_down": "walk-down",
-    "walk_up": "walk-up",
-    "walk_left": "walk-left",
-    "walk_right": "walk-right",
-    "run_down": "run-down",
-    "run_up": "run-up",
-    "run_left": "run-left",
-    "run_right": "run-right",
-    "eat_front": "eat-food-stand-front",
-    "eat_back": "eat-food-stand-back",
-    "eat_left": "eat-food-stand-left",
-    "eat_right": "eat-food-stand-right",
-    "hiss_left": "hiss-front-left",
-    "hiss_right": "hiss-front-right",
-    "jump_back": "jump-back",
-    "jump_left": "jump-left",
-    "jump_right": "jump-right",
-    "on_hind_legs": "on-hind-legs",
-    "yawn": "yawn-sit-front",
+    "idle": "idle",
+    "happy": "happy",
+    "full": "full",
+    "sleeping": "sleeping",
+    "chilling": "chilling",
+    "prone": "prone",
+    "stay_box": "stay-box",
+    "hide_in_box": "hide-in-box",
+    "out_of_box": "out-of-box",
+    "cry": "cry",
+    "dance": "dance",
+    "tickle": "tickle",
+    "supprised": "supprised",
+    "jumping": "jumping",
+    "dying": "dying",
+    "running": "running",
+    "running_left": "running-left",
+    "get_hurts": "get-hurts",
+    "attack": "attack",
+    "excited": "excited",
 }
 
 
 IDLE_SLUGS = [
-    "idle-sit",
-    "idle-stand",
-    "sit",
-    "idle-lie",
-    "tail-wag-sit-front",
-    "tail-wag-sit-left",
-    "tail-wag-sit-right",
-    "tail-wag-stand-left",
-    "tail-wag-stand-right",
-    "tail-wag-lie-left",
-    "tail-wag-lie-right",
+    "idle",
+    "chilling",
+    "happy",
+    "full",
 ]
 
 EMOTE_SLUGS = [
-    "lick-paw-sit-front",
-    "lick-paw-lie-front",
-    "meow-sit-front",
-    "meow-lie-front",
-    "meow-stand-front",
-    "scratch-sit-left",
-    "scratch-sit-right",
-    "eat-food-stand-front",
-    "eat-food-stand-left",
-    "eat-food-stand-right",
-    "hiss-front-left",
-    "hiss-front-right",
-    "jump-left",
-    "jump-right",
-    "jump-back",
-    "on-hind-legs",
-    "yawn-sit-front",
+    "happy",
+    "full",
+    "stay-box",
+    "hide-in-box",
+    "out-of-box",
+    "cry",
+    "dance",
+    "tickle",
+    "supprised",
+    "jumping",
+    "dying",
+    "get-hurts",
+    "attack",
+    "excited",
 ]
 
 SLEEP_SLUGS = [
-    "sleep-1-left-front",
-    "sleep-1-right-front",
-    "sleep-1-left-back",
-    "sleep-1-right-back",
-    "sleep-2-left-front",
-    "sleep-2-right-front",
-    "sleep-3-left-front",
-    "sleep-3-right-front",
-    "sleep-4-left-front",
-    "sleep-4-right-front",
-    "sleep-5-left-front",
-    "sleep-5-right-front",
+    "sleeping",
+    "prone",
+    "chilling",
 ]
 
 
 def load_manifest(cat_name: str) -> dict:
-    manifest_path = EXPORT_ROOT / cat_name / "manifest.json"
-    if not manifest_path.exists():
-        raise FileNotFoundError(f"Manifest not found: {manifest_path}")
+    cat_root = EXPORT_ROOT / cat_name
+    manifest_candidates = [
+        cat_root / "manifest.named.json",
+        cat_root / "manifest.json",
+    ]
+    manifest_path = next((path for path in manifest_candidates if path.exists()), None)
+    if manifest_path is None:
+        raise FileNotFoundError(f"Manifest not found in: {cat_root}")
     raw_manifest = manifest_path.read_bytes()
 
     for encoding in ("utf-8", "utf-8-sig", "gbk", "cp1251", "cp866"):
@@ -201,6 +184,15 @@ class PetWindow(QWidget):
     def animation_for_slug(self, slug: str) -> dict | None:
         return self.animations_by_slug.get(slug)
 
+    def has_slug(self, slug: str) -> bool:
+        return slug in self.animations_by_slug
+
+    def play_first_available(self, slugs: list[str]) -> None:
+        for slug in slugs:
+            if self.has_slug(slug):
+                self.play_action(slug)
+                return
+
     def call_action(self, action_name: str) -> None:
         if hasattr(self, action_name):
             method = getattr(self, action_name)
@@ -282,6 +274,10 @@ class PetWindow(QWidget):
         self.stop_jump()
         animation = self.animation_for_slug(slug)
         if animation is None:
+            fallback = self.manifest["animations"][0] if self.manifest.get("animations") else None
+            if fallback is None:
+                return
+            self.set_animation_by_directory(fallback["directory"])
             return
         self.set_animation_by_directory(animation["directory"])
 
@@ -291,53 +287,95 @@ class PetWindow(QWidget):
             return
         self.play_action(random.choice(available))
 
-    def idle_sit(self) -> None:
-        self.play_action("idle-sit")
+    def idle(self) -> None:
+        self.play_first_available(["idle"])
 
-    def idle_stand(self) -> None:
-        self.play_action("idle-stand")
+    def happy(self) -> None:
+        self.play_first_available(["happy"])
 
-    def sit(self) -> None:
-        self.play_action("sit")
+    def full(self) -> None:
+        self.play_first_available(["full"])
 
-    def idle_lie(self) -> None:
-        self.play_action("idle-lie")
+    def sleeping(self) -> None:
+        self.play_first_available(["sleeping"])
+
+    def chilling(self) -> None:
+        self.play_first_available(["chilling"])
+
+    def prone(self) -> None:
+        self.play_first_available(["prone"])
+
+    def stay_box(self) -> None:
+        self.play_first_available(["stay-box"])
+
+    def hide_in_box(self) -> None:
+        self.play_first_available(["hide-in-box"])
+
+    def out_of_box(self) -> None:
+        self.play_first_available(["out-of-box"])
+
+    def cry(self) -> None:
+        self.play_first_available(["cry"])
+
+    def dance(self) -> None:
+        self.play_first_available(["dance"])
+
+    def tickle(self) -> None:
+        self.play_first_available(["tickle"])
+
+    def supprised(self) -> None:
+        self.play_first_available(["supprised"])
+
+    def jumping(self) -> None:
+        self.play_first_available(["jumping"])
+
+    def dying(self) -> None:
+        self.play_first_available(["dying"])
+
+    def running(self) -> None:
+        self.play_first_available(["running"])
+
+    def running_left(self) -> None:
+        self.play_first_available(["running-left"])
+
+    def get_hurts(self) -> None:
+        self.play_first_available(["get-hurts"])
+
+    def attack(self) -> None:
+        self.play_first_available(["attack"])
+
+    def excited(self) -> None:
+        self.play_first_available(["excited"])
 
     def walk_left(self) -> None:
-        self.start_walk("walk-right", -1)
+        if self.has_slug("running-left"):
+            self.start_walk("running-left", -1)
+            return
+        self.play_first_available(["running"])
 
     def walk_right(self) -> None:
-        self.start_walk("walk-left", 1)
-
-    def run_left(self) -> None:
-        self.play_action("run-left")
-
-    def run_right(self) -> None:
-        self.play_action("run-right")
-
-    def run_up(self) -> None:
-        self.play_action("run-up")
-
-    def run_down(self) -> None:
-        self.play_action("run-down")
+        if self.has_slug("running"):
+            self.start_walk("running", 1)
+            return
+        self.play_first_available(["running-left", "running"])
 
     def eat(self) -> None:
         self.play_random_from(
-            ["eat-food-stand-front", "eat-food-stand-left", "eat-food-stand-right"],
+            ["full", "stay-box", "hide-in-box", "out-of-box"],
         )
 
     def sleep(self) -> None:
         self.play_random_from(SLEEP_SLUGS)
 
     def hiss(self) -> None:
-        self.play_random_from(["hiss-front-left", "hiss-front-right"])
+        self.play_random_from(["attack", "get-hurts", "cry"])
 
     def jump(self) -> None:
+        if self.has_slug("jumping") or self.has_slug("excited"):
+            self.play_random_from(["jumping", "excited"])
+            return
         direction = random.choice((-1, 1))
         self.start_jump(direction)
-
-    def yawn(self) -> None:
-        self.play_action("yawn-sit-front")
 
     def random_idle(self) -> None:
         self.play_random_from(IDLE_SLUGS)
@@ -365,11 +403,11 @@ class PetWindow(QWidget):
 
         if clicked_left_side:
             self.play_random_from(
-                ["meow-stand-front", "left-paw-swipe-stand-front", "hiss-front-left"],
+                ["happy", "tickle", "hide-in-box", "attack"],
             )
         else:
             self.play_random_from(
-                ["meow-stand-front", "right-paw-swipe-stand-front", "hiss-front-right"],
+                ["happy", "out-of-box", "supprised", "excited"],
             )
 
         self.schedule_random_behavior()
@@ -404,12 +442,12 @@ class PetWindow(QWidget):
             self.start_escape(direction)
 
     def start_escape(self, direction: int) -> None:
-        slug = "walk-right" if direction < 0 else "walk-left"
+        slug = "running-left" if direction < 0 else "running"
         animation = self.animation_for_slug(slug)
         if animation is None:
             self.annoyed_escape_active = False
             self.schedule_random_behavior()
-            self.start_jump(direction)
+            self.play_random_from(["attack", "get-hurts", "cry"])
             return
 
         self.set_animation_by_directory(animation["directory"])
@@ -421,11 +459,10 @@ class PetWindow(QWidget):
         self.stop_random_behavior()
         self.play_random_from(
             [
-                "tail-wag-sit-front",
-                "tail-wag-sit-left",
-                "tail-wag-sit-right",
-                "lick-paw-sit-front",
-                "meow-sit-front",
+                "happy",
+                "tickle",
+                "idle",
+                "stay-box",
             ],
         )
         self.schedule_random_behavior()
@@ -442,9 +479,9 @@ class PetWindow(QWidget):
             return
 
         if global_pos.x() < pet_center.x():
-            self.play_action("tail-wag-stand-left")
+            self.play_random_from(["supprised", "idle", "happy"])
         else:
-            self.play_action("tail-wag-stand-right")
+            self.play_random_from(["supprised", "idle", "happy"])
 
         if distance <= FOLLOW_RADIUS_PX:
             self.follow_cursor(global_pos)
@@ -557,7 +594,10 @@ class PetWindow(QWidget):
         self.walk_steps_remaining -= 1
 
     def set_left_facing(self, left_facing: bool) -> None:
-        target_slug = "walk-right" if left_facing else "walk-left"
+        if self.has_slug("running-left") and self.has_slug("running"):
+            target_slug = "running-left" if left_facing else "running"
+        else:
+            target_slug = "running"
         if self.current_animation_slug != target_slug:
             animation = self.animation_for_slug(target_slug)
             if animation is not None:
@@ -732,7 +772,7 @@ class PetWindow(QWidget):
     def react_to_drag_release(self) -> None:
         self.stop_random_behavior()
         self.play_random_from(
-            ["sit", "idle-sit", "tail-wag-sit-front", "meow-sit-front"],
+            ["idle", "happy", "chilling"],
         )
         self.schedule_random_behavior()
 

@@ -1,0 +1,22 @@
+﻿[
+  {"row":0,"label":"Idle","slug":"idle","directory":"idel"},
+  {"row":1,"label":"Happy","slug":"happy","directory":"happy"},
+  {"row":2,"label":"Full","slug":"full","directory":"full"},
+  {"row":3,"label":"Sleeping","slug":"sleeping","directory":"sleeping"},
+  {"row":4,"label":"Chilling","slug":"chilling","directory":"chilling"},
+  {"row":5,"label":"Prone","slug":"prone","directory":"prone"},
+  {"row":6,"label":"Stay Box","slug":"stay-box","directory":"stay_box"},
+  {"row":7,"label":"Hide In Box","slug":"hide-in-box","directory":"hide_in_box"},
+  {"row":8,"label":"Out Of Box","slug":"out-of-box","directory":"out_of_box"},
+  {"row":9,"label":"Cry","slug":"cry","directory":"cry"},
+  {"row":10,"label":"Dance","slug":"dance","directory":"dance"},
+  {"row":11,"label":"Tickle","slug":"tickle","directory":"tickle"},
+  {"row":12,"label":"Supprised","slug":"supprised","directory":"supprised"},
+  {"row":13,"label":"Jumping","slug":"jumping","directory":"jumping"},
+  {"row":14,"label":"Dying","slug":"dying","directory":"dying"},
+  {"row":15,"label":"Running","slug":"running","directory":"running"},
+  {"row":15,"label":"Running Left","slug":"running-left","directory":"running_left"},
+  {"row":16,"label":"Get Hurts","slug":"get-hurts","directory":"get_hurts"},
+  {"row":17,"label":"Attack","slug":"attack","directory":"attack"},
+  {"row":18,"label":"Excited","slug":"excited","directory":"excited"}
+]
